@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotation</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f4f4f4; /* Add a subtle background color */
+        }
+        .container {
+            width: 210mm; /* A4 width */
+            max-width: 100%; /* Ensure it doesn't exceed viewport width on very large screens */
+            margin: 20px auto; /* Center the container */
+            padding: 30px; /* Increase padding */
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+            flex-grow: 1;
+            background-color: #fff; /* White background for the container */
+        }
+        .header {
+             margin-bottom: 20px; /* Add space below the header */
+             text-align: center; /* Center header content if needed */
+        }
+        .header img {
+            max-width: 100%;
+            height: auto;
+        }
+        .info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px; /* Adjust top margin */
+            margin-bottom: 20px; /* Add bottom margin */
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee; /* Add a separator line */
+        }
+        .info .to {
+             flex: 1; /* Allow 'to' section to take available space */
+             margin-right: 20px; /* Add space between 'to' and 'date' */
+        }
+        .info .date {
+             flex-shrink: 0;
+             width: auto; /* Allow width to adjust based on content */
+             text-align: right;
+             white-space: nowrap; /* Prevent content from wrapping */
+        }
+        .section {
+            margin-top: 20px; /* Adjust top margin for sections */
+            margin-bottom: 20px; /* Add bottom margin for sections */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px; /* Adjust top margin for table */
+            margin-bottom: 20px; /* Add bottom margin for table */
+            table-layout: fixed;
+        }
+        table, th, td {
+            border: 1px solid #000;
+        }
+        th,
+        td {
+            padding: 10px 8px; /* Adjust padding for cells */
+            text-align: left;
+            word-wrap: break-word;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+         th {
+             background-color: #f2f2f2; /* Add a light background to table headers */
+             font-weight: bold;
+         }
+
+         tbody tr:nth-child(even) {
+             background-color: #f9f9f9; /* Add subtle banding to table rows */
+         }
+
+        .terms {
+            margin-top: 30px; /* Adjust top margin */
+            margin-bottom: 30px; /* Add bottom margin */
+        }
+        .signature {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            text-align: left; /* Align signature section to the left */
+        }
+        .footer {
+            border: 1px solid #000;
+            padding: 10px 15px; /* Adjust padding */
+            text-align: center;
+            margin-top: auto; /* Push footer to the bottom */
+            width: 210mm; /* Match container width */
+            max-width: 100%; /* Ensure it fits within viewport */
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box; /* Include padding and border in width */
+        }
+
+         /* Style for buttons */
+        #add-item-btn,
+        #export-pdf-btn {
+            display: inline-block; /* Display buttons inline */
+            padding: 10px 20px; /* Adjust padding */
+            margin-right: 10px; /* Add space between buttons */
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none; /* Remove underline */
+        }
+
+        #add-item-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #export-pdf-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        #add-item-btn:hover {
+            background-color: #45a049;
+        }
+
+        #export-pdf-btn:hover {
+            background-color: #1976D2;
+        }
+
+        /* Style for the remove icon */
+        .remove-item-btn .remove-icon {
+            font-size: 18px; /* Adjust size as needed */
+            font-weight: bold;
+            line-height: 1; /* Adjust line height for vertical centering */
+            color: white; /* Match button text color */
+        }
+
+        /* Ensure all form text elements use Times New Roman */
+        textarea,
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+            font-family: "Times New Roman", Times, serif;
+        }
+
+        /* Style for Terms and Conditions textarea */
+        #terms-conditions {
+            margin-top: 0; /* Remove default top margin */
+            display: block; /* Ensure it behaves as a block element */
+            width: 100%; /* Take full width available */
+            box-sizing: border-box; /* Include padding and border in element's total width */
+        }
+
+        @media print {
+            #add-item-btn,
+            #export-pdf-btn,
+            .remove-item-btn {
+                display: none;
+            }
+
+            /* Hide the remove button column in print */
+            table th:nth-child(7),
+            table td:nth-child(7) {
+                display: none;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            textarea {
+                border: none !important;
+                box-shadow: none !important;
+                outline: none !important;
+                background-color: transparent !important;
+                resize: none !important; /* Prevent textarea resize handles in print */
+                -webkit-print-color-adjust: exact; /* Ensure background is transparent in print */
+                print-color-adjust: exact; /* Ensure background is transparent in print */
+                /* Potentially hide the input elements themselves if needed */
+                /* display: none; */
+            }
+
+            input[type="date"] {
+                -webkit-appearance: none !important;
+                -moz-appearance: none !important;
+                appearance: none !important;
+                border: none !important;
+                box-shadow: none !important;
+                outline: none !important;
+                background-color: transparent !important;
+                color: black !important;
+                content: attr(value);
+                display: inline-block; /* Ensure it takes up space */
+                white-space: nowrap; /* Prevent wrapping */
+                padding: 0; /* Remove padding */
+                margin: 0; /* Remove margin */
+            }
+
+            input[type="date"]::-webkit-calendar-picker-indicator {
+                display: none !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                -webkit-appearance: none !important;
+            }
+
+            input[type="date"]::-moz-calendar-picker-indicator {
+                display: none !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            input[type="date"]::-ms-calendar-picker-indicator {
+                display: none !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+             /* If hiding inputs makes text disappear, try styling the text content directly */
+             table td input[type="text"]::before,
+             table td input[type="number"]::before,
+             table td textarea::before {
+                 content: attr(value);
+                 display: inline; /* Or block, depending on layout needs */
+             }
+
+             table td input[type="text"],
+             table td input[type="number"],
+             table td textarea {
+                 color: black !important; /* Ensure text is black in print */
+             }
+
+             /* Hide the original input elements if the ::before content approach works */
+             table td input[type="text"],
+             table td input[type="number"],
+             table td textarea {
+                  /* display: none; */ /* Uncomment this if ::before displays the value */
+             }
+
+             /* Removed complex print styles for footer line breaks */
+             /*
+             .footer br {
+                 display: none; 
+             }
+             .footer::after {
+                 content: "Dist - Bharuch (Gujarat) - 393001 Email- cheharmata@gmail.com | (M) 9998016708"; 
+                 white-space: nowrap; 
+                 display: block; 
+                 text-align: center; 
+                 overflow: hidden; 
+             }
+             */
+
+            /* Reduce footer font size in print */
+            .footer {
+                font-size: 10px; /* Adjust the size as needed */
+                white-space: normal; /* Allow content to wrap naturally */
+                text-align: center; /* Ensure centered text */
+            }
+
+            .signature {
+                /* margin-top: 65mm; Removed fixed margin-top for space above signature in print */
+            }
+
+        }
+
+        /* Adjust column widths */
+        table th:nth-child(1), table td:nth-child(1) { width: 9%; text-align: center; } /* Sr. No. - Centered */
+        table th:nth-child(2), table td:nth-child(2) { width: 45%; } /* Description */
+        table th:nth-child(3), table td:nth-child(3) { width: 15%; } /* Qty */
+        table th:nth-child(4), table td:nth-child(4) { width: 10%; } /* Unit */
+        table th:nth-child(5), table td:nth-child(5) { width: 15%; } /* Rate */
+        table th:nth-child(6), table td:nth-child(6) { width: 20%; } /* Amount */
+        table th:nth-child(7), table td:nth-child(7) { width: 10%; } /* Remove button column */
+
+        /* Style for inputs within table cells to prevent overflow */
+        table td input[type="text"],
+        table td input[type="number"] {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            border: none;
+            box-sizing: border-box; /* Include padding and border in the element's total width */
+        }
+
+        /* Style for Sr. No. header - Removed vertical styling */
+        /*
+        table th:nth-child(1) {
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            text-orientation: mixed;
+            white-space: nowrap;
+        }
+        */
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+                margin: 10px auto;
+                width: auto;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                box-sizing: border-box;
+            }
+
+            .header img {
+                max-width: 100%;
+            }
+
+            .info {
+                flex-direction: column;
+            }
+
+            .info .to,
+            .info .date {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            /* Adjust input and textarea widths for mobile in general sections */
+            input[type="text"],
+            input[type="date"],
+            input[type="number"],
+            textarea {
+                width: 100%;
+                padding: 8px;
+                margin: 5px 0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+
+            /* Table styles for mobile - simplified for horizontal scrolling */
+            table {
+                /* display: table; Removed explicit display rule */
+                width: 100%; /* Take full width of the scrollable container */
+                margin: 15px 0;
+                border-collapse: collapse;
+                table-layout: auto; /* Allow columns to size based on content and min-width */
+                /* min-width: 650px; Keeping min-width on cells */
+            }
+
+             /* Ensure table elements retain their default display properties */
+             thead,
+             tbody,
+             tr,
+             th,
+             td {
+                 /* Remove explicit display rules like table-header-group, table-row, table-cell */
+                 /* display: table-header-group; */
+                 /* display: table-row-group; */
+                 /* display: table-row; */
+                 /* display: table-cell; */
+                 display: revert; /* Revert to default display properties */
+             }
+
+             th,
+             td {
+                 padding: 8px; /* Adjust padding as needed */
+                 text-align: left;
+                 word-wrap: break-word;
+                 box-sizing: border-box;
+                 border: 1px solid #000;
+                 vertical-align: top;
+                 white-space: normal;
+            }
+
+             /* Specific column width adjustments for mobile - use min-width */
+            table th:nth-child(1), table td:nth-child(1) { min-width: 50px; text-align: center; } /* Sr. No. */
+            table th:nth-child(2), table td:nth-child(2) { min-width: 200px; } /* Description */
+            table th:nth-child(3), table td:nth-child(3) { min-width: 80px; } /* Qty */
+            table th:nth-child(4), table td:nth-child(4) { min-width: 80px; } /* Unit */
+            table th:nth-child(5), table td:nth-child(5) { min-width: 100px; } /* Rate */
+            table th:nth-child(6), table td:nth-child(6) { min-width: 120px; } /* Amount */
+            table th:nth-child(7), table td:nth-child(7) { min-width: 80px; } /* Remove button */
+
+            /* Adjust input and textarea styles within table cells */
+            table td input[type="text"],
+            table td input[type="number"],
+            table td textarea {
+                width: 100%;
+                padding: 4px;
+                margin: 0;
+                border: 1px solid #ddd;
+                box-sizing: border-box;
+                font-size: 12px;
+            }
+
+             table td textarea {
+                 min-height: 40px;
+                 resize: vertical;
+             }
+
+             table td input[type="number"] {
+                 text-align: right;
+             }
+
+            /* Style the remove button within table cells */
+            table td .remove-item-btn {
+                width: auto;
+                padding: 4px 8px;
+                background: #ff4444;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+                display: inline-block;
+                line-height: 1;
+            }
+
+            table td .remove-item-btn:hover {
+                background: #cc0000;
+            }
+
+            /* Style the Add Item and Export buttons */
+            #add-item-btn,
+            #export-pdf-btn {
+                width: 100%;
+                padding: 12px;
+                margin: 10px 0;
+                background: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+            #export-pdf-btn {
+                background: #2196F3;
+            }
+
+            #add-item-btn:hover {
+                background: #45a049;
+            }
+
+            #export-pdf-btn:hover {
+                background: #1976D2;
+            }
+
+        }
+
+        /* Print styles */
+        @media print {
+            /* Attempt to hide default browser headers and footers */
+            @page {
+                margin: 0;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Remove container border in print */
+
+            .to {
+                margin-top: 5rem;
+            }
+
+            .quotation-date {
+                margin-top: 5rem;
+            }
+
+            .container {
+                border: none;
+            }
+
+            #add-item-btn,
+            #export-pdf-btn,
+            .remove-item-btn {
+                display: none;
+            }
+
+            /* Hide the remove button column in print */
+            table th:nth-child(7),
+            table td:nth-child(7) {
+                display: none;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            textarea {
+                border: none !important;
+                box-shadow: none !important;
+                outline: none !important;
+                background-color: transparent !important;
+                resize: none !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color: black !important;
+            }
+
+            /* Hide the date input entirely in print */
+            /* Removed rule to hide the entire date input */
+            /*
+            #quotation-date,
+            input[type="date"] {
+                 display: none !important;
+            }
+            */
+
+            /* Hide the date input calendar icon in print and display value */
+             input[type="date"] {
+                 -webkit-appearance: none !important;
+                 -moz-appearance: none !important;
+                 appearance: none !important;
+                 border: none !important;
+                 box-shadow: none !important;
+                 outline: none !important;
+                 background-color: transparent !important;
+                 color: black !important;
+                 content: attr(value);
+                 display: inline-block; /* Ensure it takes up space */
+                 white-space: nowrap; /* Prevent wrapping */
+                 padding: 0; /* Remove padding */
+                 margin: 0; /* Remove margin */
+             }
+
+            #quotation-date::-webkit-calendar-picker-indicator {
+                display: none !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                -webkit-appearance: none !important;
+            }
+
+            #quotation-date::-moz-calendar-picker-indicator {
+                display: none !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            #quotation-date::-ms-calendar-picker-indicator {
+                display: none !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* Ensure content of inputs/textareas is visible */
+             table td input[type="text"],
+             table td input[type="number"],
+             table td textarea {
+                 display: block;
+                 width: 100%;
+                 padding: 0;
+                 margin: 0;
+             }
+
+            .footer {
+                font-size: 10px;
+                white-space: normal;
+                text-align: center;
+            }
+
+             /* Remove specific print margin for signature */
+            .signature {
+                margin-top: 0;
+            }
+
+            /* Add some space above signature if needed, will be dynamic */
+            .section + .signature {
+                 margin-top: 30px;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="assets/header.png" alt="Company Header">
+        </div>
+
+        <div class="info">
+            <div class="to">
+                To,<br>
+                <textarea id="to-info" rows="4" cols="50" placeholder="Enter Recipient Information">M/s CHEMIE ORGANIC Chemicals (India) PVT. Ltd.
+Plot No 758.GIDC Jhagadia
+Dist- Bharuch (Guj)</textarea>
+            </div>
+            <div class="date">
+                <label for="quotation-date">Date :</label> <input type="date" id="quotation-date" value="2025-05-20">
+            </div>
+        </div>
+
+        <div class="section">
+            <label for="kind-attan">Kind Attan:-</label> <input type="text" id="kind-attan" value="Mr. S.J. Patel">
+        </div>
+
+        <div class="section">
+            <label for="subject">Sub:-</label> <input type="text" id="subject" value="Quotation For Mansoon Shed Work" style="width: 80%;">
+        </div>
+
+        <div class="section">
+            Dear Sir,<br>
+            <!-- Removed Salutation textarea -->
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="item-rows">
+                <!-- Example row with input fields - This will be dynamic later -->
+                <tr>
+                    <td data-label="Sr. No.">1</td>
+                    <td data-label="Description"><textarea class="item-description" rows="2" cols="30" placeholder="Enter Item Description" aria-label="Description">Providing and Fixing Bamboo mansoon shed Work</textarea></td>
+                    <td data-label="Qty"><input type="number" class="item-qty" value="2000.00" aria-label="Quantity"></td>
+                    <td data-label="Unit"><input type="text" class="item-unit" value="Sqft" aria-label="Unit"></td>
+                    <td data-label="Rate"><input type="number" class="item-rate" value="30.00" aria-label="Rate"></td>
+                    <td data-label="Amount"><input type="text" class="item-amount" value="60000.00" readonly aria-label="Amount"></td>
+                    <td><button class="remove-item-btn" aria-label="Remove Item"><span class="remove-icon">&times;</span></button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button id="add-item-btn" aria-label="Add new item row">Add Item</button>
+        <button id="export-pdf-btn">Download PDF</button>
+
+        <div class="terms section">
+            <strong>Term's & Condition :-</strong>
+            <textarea id="terms-conditions" rows="6" cols="80" placeholder="Enter Terms and Conditions" aria-label="Terms and Conditions">(1) Subject to be Ankleshwar Juriduction .
+(2) Payment 50% Advance and 50% After work Completed.
+(3) Work started with in 4 days after receiving of work order
+(4) GST Extra 18%</textarea>
+        </div>
+
+        <div class="signature section">
+            For, DARSHAN ENTERPRISES<br>
+            <br>
+            <img id="signature-image" src="assets/Signature.png" alt="Propreitor Signature" style="max-width: 150px; height: auto;">
+            <br>
+            <input type="text" id="propreitor-name" value="Mata Prasad Prajapati" aria-label="Proprietor Name">
+        </div>
+
+        <div class="footer section">
+            Add: A-29, Radhey Krishna Recidency Nr. Glorious School, Valia Road GIDC Ankleshwar,<br>
+            Dist - Bharuch (Gujarat) - 393001 Email- cheharmata@gmail.com | (M) 9998016708
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
